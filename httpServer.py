@@ -86,10 +86,10 @@ class httpHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        print("do_GET: ",self.path)
+        # print("do_GET: ",self.path)
         
-        print("Path: : " + str(self.path))
-        print("Headers: " + str(self.headers))
+        # print("Path: : " + str(self.path))
+        # print("Headers: " + str(self.headers))
 
         # 提取有效数据并转化成np array
         b = urllib.parse.parse_qsl(urlparse(self.path).query)
@@ -112,13 +112,17 @@ class httpHandler(BaseHTTPRequestHandler):
         listValues.insert(2, log_date) 
         listValues.insert(3, log_time) 
         # print(listValues)
+        # start = datetime.now()
         log_file = log_file_open(listValues[1])
         wrtiteData = ' '.join(listValues[2:]) + "\n"
         # print(wrtiteData)
         log_file.writelines(wrtiteData)   
         log_file.flush()
         log_file.close()      
+        # end = datetime.now()
 
+        # diff = end - start
+        # print("写入文件耗时:", diff)
         self._set_response()
         self.wfile.write("<html><body><h1>HTTP GET Success!</h1></body></html>".encode())
 
