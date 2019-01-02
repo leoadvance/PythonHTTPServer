@@ -1,20 +1,41 @@
 # coding=utf-8
 # 允许带执行参数
 import getopt
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 from urllib.parse import urlparse
+import urllib
 import sys 
 import socket
+import numpy as np
+# 时间
+from datetime import datetime
 
 # 默认IP和端口号
 hostIP = "192.168.1.1"
 hostPort = 80
 
+DIR_NAME = "./Log"
 
 # 参数使用说明
 def usage():
     print("-p   Server Port number Default value is 80")
+
+# 创建log文件 
+def log_file_create(fileName):
+
+    fileName = fileName[:-1]
+    print("fileName:", fileName)
+    # 判断目录是否存在
+    if os.path.isdir(DIR_NAME) == False:
+        os.mkdir(DIR_NAME)
+        print("目录不存在，创建目录:" + DIR_NAME)
+
+    # 新建logfile 串口名+创建时间
+    time_str = datetime.now().strftime("_%Y-%m-%d")
+    #print(time_str)
+    return(open(DIR_NAME + "/" + fileName + time_str + ".csv", "w"))
 
 # 获取系统参数并解析
 def getSysPara():
@@ -39,8 +60,8 @@ def getSysPara():
                 if hostPort < 0 or hostPort > 65536:
                     print(" ERROR ! The port number must be between 0 and 65535!")
                     sys.exit(1)
-                else: 
-                    print("arg:", hostPort)
+                # else: 
+                    # print("arg:", hostPort)
 
     except getopt.GetoptError as err:
         print('ERROR:', err)
@@ -63,7 +84,37 @@ class httpHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        print("do_GET: ")
+        print("do_GET: ",self.path)
+        
+        print("Path: : " + str(self.path))
+        print("Headers: " + str(self.headers))
+
+        # 提取有效数据并转化成np array
+        b = urllib.parse.parse_qsl(urlparse(self.path).query)
+        values = np.array(b)
+        # print(b)
+        # print("array.size:", values.size, " array.shape:", values.shape)
+
+        # 遍历数组 并且把二维转成1维
+        listValues = []
+        [rows, cols] = values.shape
+        # print(rows, cols)
+        for i in range(rows):
+            for j in range(cols):
+                a = str(values[i][j])+ ','
+                # print(a)
+                listValues.append(a)
+        # 插入时间数据 年月日 时分秒
+        log_date = datetime.now().strftime("%Y/%m/%d,")
+        log_time = datetime.now().strftime("%H:%M:%S.%f")[:-3] + ","
+        listValues.insert(2, log_date) 
+        listValues.insert(3, log_time) 
+        print(listValues)
+        log_file = log_file_create(listValues[1]) 
+        log_file.writelines(listValues[2:])   
+        log_file.flush()
+        log_file.close()      
+
         self._set_response()
         self.wfile.write("<html><body><h1>HTTP GET Success!</h1></body></html>".encode())
 
@@ -85,7 +136,7 @@ class httpHandler(BaseHTTPRequestHandler):
         self._set_response()
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
         print("urlparse: ")
-        o = urlparse(post_data)
+        o = urlparse(post_data).query
         print(o)
         
 def run(port = 80):
