@@ -1,24 +1,50 @@
-#!/usr/bin/env python
-"""
-Very simple HTTP server in python.
-Usage::
-    ./dummy-web-server.py [<port>]
-Send a GET request::
-    curl http://localhost
-Send a HEAD request::
-    curl -I http://localhost
-Send a POST request::
-    curl -d "foo=bar&bin=baz" http://localhost
-"""
+# coding=utf-8
+# 允许带执行参数
+import getopt
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 from urllib.parse import urlparse
-from sys import argv
+import sys 
 import socket
 
 # 默认IP和端口号
 hostIP = "192.168.1.1"
 hostPort = 80
+
+
+# 参数使用说明
+def usage():
+    print("-p   Server Port number Default value is 80")
+
+# 获取系统参数并解析
+def getSysPara():
+    argv = sys.argv[1:]
+    # print("argv:", argv)
+    try:
+        # 获取参数 带:表明必须带参数 如p: -p xx
+        Para, args = getopt.getopt(argv, "hp:", ["help"])
+        # print('Para   :', Para)
+        for o, arg in Para:
+            if o in ("-h", "--help"):
+                # 打印使用说明
+                usage()
+                sys.exit(0)
+            # 提取端口号
+            if o in ("-p"):
+                
+                # 声明host是全局变量
+                global hostPort 
+                hostPort = int(arg)
+                # 防止越界
+                if hostPort < 0 or hostPort > 65536:
+                    print(" ERROR ! The port number must be between 0 and 65535!")
+                    sys.exit(1)
+                else: 
+                    print("arg:", hostPort)
+
+    except getopt.GetoptError as err:
+        print('ERROR:', err)
+        sys.exit(1)
 
 def get_host_ip():
     try:
@@ -27,7 +53,6 @@ def get_host_ip():
         ip = s.getsockname()[0]
     finally:
         s.close()
- 
     return ip
 
 class httpHandler(BaseHTTPRequestHandler):
@@ -71,9 +96,8 @@ def run(port = 80):
 
 if __name__ == "__main__":
 
-
-    if len(argv) == 2:
-        hostPort = int(argv[1])
+    # 获取系统参数
+    getSysPara()
     # 获取本机IP
     hostIP = get_host_ip()
     print("hostIP: " + hostIP + " port: {:d}".format(hostPort))
