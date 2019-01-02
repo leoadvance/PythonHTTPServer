@@ -13,6 +13,22 @@ Send a POST request::
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 from urllib.parse import urlparse
+from sys import argv
+import socket
+
+# 默认IP和端口号
+hostIP = "192.168.1.1"
+hostPort = 80
+
+def get_host_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    finally:
+        s.close()
+ 
+    return ip
 
 class httpHandler(BaseHTTPRequestHandler):
     def _set_response(self):
@@ -24,7 +40,7 @@ class httpHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         print("do_GET: ")
         self._set_response()
-        self.wfile.write("<html><body><h1>hi! LEO</h1></body></html>".encode())
+        self.wfile.write("<html><body><h1>HTTP GET Success!</h1></body></html>".encode())
 
     def do_HEAD(self):
         print("do_HEAD: ")
@@ -48,15 +64,19 @@ class httpHandler(BaseHTTPRequestHandler):
         print(o)
         
 def run(port = 80):
-    server_address = ('', port)
+    server_address = ("", port)
     httpd = HTTPServer(server_address, httpHandler)
-    print ('Starting httpd...')
+    
     httpd.serve_forever()
 
 if __name__ == "__main__":
-    from sys import argv
+
 
     if len(argv) == 2:
-        run(port=int(argv[1]))
-    else:
-        run()
+        hostPort = int(argv[1])
+    # 获取本机IP
+    hostIP = get_host_ip()
+    print("hostIP: " + hostIP + " port: {:d}".format(hostPort))
+    print ('Starting http server...')  
+
+    run(hostPort)
