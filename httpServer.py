@@ -22,11 +22,12 @@ DIR_NAME = "./Log"
 def usage():
     print("-p   Server Port number Default value is 80")
 
-# 创建log文件 
-def log_file_create(fileName):
+# 创建or打开log文件 
+def log_file_open(fileName):
 
+    # 删除多余,
     fileName = fileName[:-1]
-    print("fileName:", fileName)
+    # print("fileName:", fileName)
     # 判断目录是否存在
     if os.path.isdir(DIR_NAME) == False:
         os.mkdir(DIR_NAME)
@@ -35,7 +36,8 @@ def log_file_create(fileName):
     # 新建logfile 串口名+创建时间
     time_str = datetime.now().strftime("_%Y-%m-%d")
     #print(time_str)
-    return(open(DIR_NAME + "/" + fileName + time_str + ".csv", "w"))
+    # 追加的方式打开文件
+    return(open(DIR_NAME + "/" + fileName + time_str + ".csv", "a"))
 
 # 获取系统参数并解析
 def getSysPara():
@@ -109,9 +111,11 @@ class httpHandler(BaseHTTPRequestHandler):
         log_time = datetime.now().strftime("%H:%M:%S.%f")[:-3] + ","
         listValues.insert(2, log_date) 
         listValues.insert(3, log_time) 
-        print(listValues)
-        log_file = log_file_create(listValues[1]) 
-        log_file.writelines(listValues[2:])   
+        # print(listValues)
+        log_file = log_file_open(listValues[1])
+        wrtiteData = ' '.join(listValues[2:]) + "\n"
+        # print(wrtiteData)
+        log_file.writelines(wrtiteData)   
         log_file.flush()
         log_file.close()      
 
