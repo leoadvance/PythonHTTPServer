@@ -25,19 +25,15 @@ def usage():
 # 创建or打开log文件 
 def log_file_open(fileName):
 
-    # 删除多余,
-    fileName = fileName[:-1]
     # print("fileName:", fileName)
     # 判断目录是否存在
     if os.path.isdir(DIR_NAME) == False:
         os.mkdir(DIR_NAME)
         print("目录不存在，创建目录:" + DIR_NAME)
 
-    # 新建logfile 串口名+创建时间
-    time_str = datetime.now().strftime("_%Y-%m-%d")
     #print(time_str)
     # 追加的方式打开文件
-    return(open(DIR_NAME + "/" + fileName + time_str + ".csv", "a"))
+    return(open(DIR_NAME + "/" + fileName+ ".csv", "a"))
 
 # 获取系统参数并解析
 def getSysPara():
@@ -103,18 +99,17 @@ class httpHandler(BaseHTTPRequestHandler):
         # print(rows, cols)
         for i in range(rows):
             for j in range(cols):
-                a = str(values[i][j])+ ','
                 # print(a)
-                listValues.append(a)
+                listValues.append(str(values[i][j]))
         # 插入时间数据 年月日 时分秒
-        log_date = datetime.now().strftime("%Y/%m/%d,")
-        log_time = datetime.now().strftime("%H:%M:%S.%f")[:-3] + ","
+        log_date = datetime.now().strftime("%Y/%m/%d")
+        log_time = datetime.now().strftime("%H:%M:%S.%f")[:-3]
         listValues.insert(2, log_date) 
         listValues.insert(3, log_time) 
         # print(listValues)
         # start = datetime.now()
         log_file = log_file_open(listValues[1])
-        wrtiteData = ' '.join(listValues[2:]) + "\n"
+        wrtiteData = ','.join(listValues[2:]) + "\n"
         # print(wrtiteData)
         log_file.writelines(wrtiteData)   
         log_file.flush()
