@@ -1,4 +1,8 @@
 # coding=utf-8
+
+# 图形界面
+from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QColorDialog, QFontDialog, QTextEdit, QMainWindow, QFileDialog
+from uiMainWindow import *
 # 允许带执行参数
 import getopt
 import os
@@ -17,6 +21,13 @@ hostIP = "192.168.1.1"
 hostPort = 80
 
 DIR_NAME = "./Log"
+
+
+class MyWindow(QMainWindow, Ui_MainWindow):
+    def __init__(self, parent=None):
+        super(MyWindow, self).__init__(parent)
+        self.setupUi(self)
+
 
 # 参数使用说明
 def usage():
@@ -143,13 +154,16 @@ class httpHandler(BaseHTTPRequestHandler):
         print(o)
         
 def run(port = 80):
+
     server_address = ("", port)
     httpd = HTTPServer(server_address, httpHandler)
     
     httpd.serve_forever()
 
 if __name__ == "__main__":
-
+    app = QApplication(sys.argv)
+    myWin = MyWindow()
+    myWin.show()
     # 获取系统参数
     getSysPara()
     # 获取本机IP
