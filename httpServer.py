@@ -16,6 +16,8 @@ import numpy as np
 # 时间
 from datetime import datetime
 
+import threading
+
 # 默认IP和端口号
 hostIP = "192.168.1.1"
 hostPort = 80
@@ -160,10 +162,14 @@ def run(port = 80):
     
     httpd.serve_forever()
 
-if __name__ == "__main__":
+def threadUI():
     app = QApplication(sys.argv)
     myWin = MyWindow()
     myWin.show()
+    sys.exit(app.exec_())
+    # app.exec_()
+# 服务器线程
+def threadServer():
     # 获取系统参数
     getSysPara()
     # 获取本机IP
@@ -172,3 +178,12 @@ if __name__ == "__main__":
     print ('Starting http server...')  
 
     run(hostPort)
+
+if __name__ == "__main__":
+      #创建一个线程ta，执行 threadfun()
+    tb = threading.Thread(target=threadServer)    #创建一个线程tb，执行threadfun()        #调用start()，运行线程
+    # 子线程随主线程退出而退出
+    tb.daemon = True
+    tb.start()  
+    threadUI()
+
