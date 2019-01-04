@@ -27,7 +27,6 @@ DIR_NAME = "./Log"
 
 
 
-
 # 参数使用说明
 def usage():
     print("-p   Server Port number Default value is 80")
@@ -123,7 +122,10 @@ class httpHandler(BaseHTTPRequestHandler):
         # print(wrtiteData)
         log_file.writelines(wrtiteData)   
         log_file.flush()
-        log_file.close()      
+        log_file.close() 
+
+        global myWin
+        myWin.HTTPServerThread.logSignal.emit(wrtiteData)     
         # end = datetime.now()
 
         # diff = end - start
@@ -152,41 +154,39 @@ class httpHandler(BaseHTTPRequestHandler):
         o = urlparse(post_data).query
         print(o)
         
-def run(port = 80):
+def run(self, port = 80):
 
     server_address = ("", port)
     httpd = HTTPServer(server_address, httpHandler)
-    
-    httpd.serve_forever()
-
-def threadUI():
-    app = QApplication(sys.argv)
-    myWin = MyWindow()
-    myWin.show()
-    sys.exit(app.exec_())
+    self.logSignal.emit("testSignal run")
+    httpd.serve_forever() 
     # app.exec_()
 # 服务器线程
-def threadServer():
+def threadServer(self):
     # 获取系统参数
     getSysPara()
     # 获取本机IP
     hostIP = get_host_ip()
     print("hostIP: " + hostIP + " port: {:d}".format(hostPort))
     print ('Starting http server...')  
-
-    run(hostPort)
+    self.logSignal.emit("testSignal threadServer")
+    run(self, hostPort)
 
 
 class HTTPServerThread(QThread):
+
+    # 创建finish信号量 参数字符串
     finished_signal = pyqtSignal(str)
 
+    # log信号
+    logSignal = pyqtSignal(str)
     def __init__(self, parent=None):
         super().__init__(parent)
         # self._rest = rest
 
     def run(self):
         print('Qt HTTP server Thread Start')
-        threadServer()
+        threadServer(self)
         self.finished_signal.emit('done')
 
 
@@ -201,12 +201,17 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.testTimer.timeout.connect(self.show_time)  # 定时超时事件绑定show_time这个函数          
         self.testTimer.start(1000) 
         
-        self.HTTPServerThread = HTTPServerThread()
-        self.HTTPServerThread.start()         #定时器每一秒执行一次
+        # self.HTTPServerThread = HTTPServerThread()
+        # self.HTTPServerThread.
+        # self.HTTPServerThread.start()         #定时器每一秒执行一次
 
     def show_time(self):
         self.time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print("time_now:", self.time_now)
+
+    # 测试槽
+    def testSlot(self, str):
+        print("testSlot: ", str)
 
 if __name__ == "__main__":
       #创建一个线程ta，执行 threadfun()
@@ -214,5 +219,13 @@ if __name__ == "__main__":
     # # 子线程随主线程退出而退出
     # tb.daemon = True
     # tb.start()  
-    threadUI()
+    app = QApplication(sys.argv)
+    global myWin
+    myWin = MyWindow()
+
+    myWin.HTTPServerThread = HTTPServerThread()
+    myWin.HTTPServerThread.logSignal.connect(myWin.testSlot)
+    myWin.HTTPServerThread.start()  
+    myWin.show()
+    sys.exit(app.exec_())
 
