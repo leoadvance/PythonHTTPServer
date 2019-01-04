@@ -113,12 +113,12 @@ class httpHandler(BaseHTTPRequestHandler):
         # 插入时间数据 年月日 时分秒
         log_date = datetime.now().strftime("%Y/%m/%d")
         log_time = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-        listValues.insert(2, log_date) 
-        listValues.insert(3, log_time) 
+        # listValues.insert(2, log_date) 
+        # listValues.insert(3, log_time) 
         # print(listValues)
         # start = datetime.now()
         log_file = log_file_open(listValues[1])
-        wrtiteData = ','.join(listValues[2:]) + "\n"
+        wrtiteData = log_date + "," + log_time + "," + ','.join(listValues[2:]) + "\n"
         # print(wrtiteData)
         log_file.writelines(wrtiteData)   
         log_file.flush()
