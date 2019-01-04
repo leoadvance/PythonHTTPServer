@@ -32,18 +32,7 @@ DIR_NAME = "./Log"
 def usage():
     print("-p   Server Port number Default value is 80")
 
-# 创建or打开log文件 
-def log_file_open(fileName):
 
-    # print("fileName:", fileName)
-    # 判断目录是否存在
-    if os.path.isdir(DIR_NAME) == False:
-        os.mkdir(DIR_NAME)
-        print("目录不存在，创建目录:" + DIR_NAME)
-
-    #print(time_str)
-    # 追加的方式打开文件
-    return(open(DIR_NAME + "/" + fileName+ ".csv", "a"))
 
 # 获取系统参数并解析
 def getSysPara():
@@ -111,28 +100,27 @@ class httpHandler(BaseHTTPRequestHandler):
             for j in range(cols):
                 # print(a)
                 listValues.append(str(values[i][j]))
+   
+        # start = datetime.now()
+        # 声明log 实例
+        logClass = LOGClass(str(listValues[1]))
         # 插入时间数据 年月日 时分秒
         log_date = datetime.now().strftime("%Y/%m/%d")
         log_time = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-        # listValues.insert(2, log_date) 
-        # listValues.insert(3, log_time) 
-        # print(listValues)
-        # start = datetime.now()
-        log_file = log_file_open(listValues[1])
         wrtiteData = log_date + "," + log_time + "," + ','.join(listValues[2:]) + "\n"
         # print(wrtiteData)
-        log_file.writelines(wrtiteData)   
-        log_file.flush()
-        log_file.close() 
-        a = LOGClass()
-        global myWin
-        myWin.HTTPServerThread.logSignal.emit(wrtiteData)     
-        # end = datetime.now()
+        # log_file.writelines(wrtiteData)   
+        # log_file.flush()
+        # log_file.close() 
+        logClass.log_file_write(wrtiteData)
 
-        # diff = end - start
-        # print("写入文件耗时:", diff)
         self._set_response()
         self.wfile.write("<html><body><h1>HTTP GET Success!</h1></body></html>".encode())
+        global myWin
+        myWin.HTTPServerThread.logSignal.emit(wrtiteData)   
+        # end = datetime.now()
+        # diff = end - start
+        # print("写入文件耗时:", diff)
 
     def do_HEAD(self):
         print("do_HEAD: ")
