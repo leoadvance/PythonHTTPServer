@@ -1,8 +1,8 @@
 # coding=utf-8
 
 # 图形界面
-from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QColorDialog, QFontDialog, QTextEdit, QMainWindow, QFileDialog
-from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 from ui import *
 # 允许带执行参数
 import getopt
@@ -16,7 +16,6 @@ import socket
 import numpy as np
 # 时间
 from datetime import datetime
-import time
 
 import threading
 
@@ -27,18 +26,7 @@ hostPort = 80
 DIR_NAME = "./Log"
 
 
-class MyWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self):
-        QMainWindow.__init__(self)  # 创建主界面对象
-        Ui_MainWindow.__init__(self)#主界面对象初始化
-        self.setupUi(self)  #配置主界面对象
-        self.testTimer = QTimer()  # 创建定时器
-        self.testTimer.timeout.connect(self.show_time)  # 定时超时事件绑定show_time这个函数          
-        self.testTimer.start(1000)          #定时器每一秒执行一次
 
-    def show_time(self):
-        self.time_now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))#
-        print("time_now:", self.time_now)
 
 # 参数使用说明
 def usage():
@@ -188,11 +176,43 @@ def threadServer():
 
     run(hostPort)
 
+
+class HTTPServerThread(QThread):
+    finished_signal = pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # self._rest = rest
+
+    def run(self):
+        print('Qt HTTP server Thread Start')
+        threadServer()
+        self.finished_signal.emit('done')
+
+
+class MyWindow(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        QMainWindow.__init__(self)  # 创建主界面对象
+        Ui_MainWindow.__init__(self)#主界面对象初始化
+        self.setupUi(self)  #配置主界面对象
+        
+        # 1s测试定时器
+        self.testTimer = QTimer() 
+        self.testTimer.timeout.connect(self.show_time)  # 定时超时事件绑定show_time这个函数          
+        self.testTimer.start(1000) 
+        
+        self.HTTPServerThread = HTTPServerThread()
+        self.HTTPServerThread.start()         #定时器每一秒执行一次
+
+    def show_time(self):
+        self.time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print("time_now:", self.time_now)
+
 if __name__ == "__main__":
       #创建一个线程ta，执行 threadfun()
-    tb = threading.Thread(target=threadServer)    #创建一个线程tb，执行threadfun()        #调用start()，运行线程
-    # 子线程随主线程退出而退出
-    tb.daemon = True
-    tb.start()  
+    # tb = threading.Thread(target=threadServer)    #创建一个线程tb，执行threadfun()        #调用start()，运行线程
+    # # 子线程随主线程退出而退出
+    # tb.daemon = True
+    # tb.start()  
     threadUI()
 
