@@ -2,7 +2,7 @@
 
 # 图形界面
 from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QColorDialog, QFontDialog, QTextEdit, QMainWindow, QFileDialog
-from uiMainWindow import *
+from ui import *
 # 允许带执行参数
 import getopt
 import os
