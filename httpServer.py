@@ -2,6 +2,7 @@
 
 # 图形界面
 from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QColorDialog, QFontDialog, QTextEdit, QMainWindow, QFileDialog
+from PyQt5.QtCore import QTimer
 from ui import *
 # 允许带执行参数
 import getopt
@@ -15,6 +16,7 @@ import socket
 import numpy as np
 # 时间
 from datetime import datetime
+import time
 
 import threading
 
@@ -26,10 +28,17 @@ DIR_NAME = "./Log"
 
 
 class MyWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, parent=None):
-        super(MyWindow, self).__init__(parent)
-        self.setupUi(self)
+    def __init__(self):
+        QMainWindow.__init__(self)  # 创建主界面对象
+        Ui_MainWindow.__init__(self)#主界面对象初始化
+        self.setupUi(self)  #配置主界面对象
+        self.testTimer = QTimer()  # 创建定时器
+        self.testTimer.timeout.connect(self.show_time)  # 定时超时事件绑定show_time这个函数          
+        self.testTimer.start(1000)          #定时器每一秒执行一次
 
+    def show_time(self):
+        self.time_now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))#
+        print("time_now:", self.time_now)
 
 # 参数使用说明
 def usage():
