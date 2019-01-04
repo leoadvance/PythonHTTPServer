@@ -4,6 +4,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from ui import *
+from logFile import *
 # 允许带执行参数
 import getopt
 import os
@@ -123,7 +124,7 @@ class httpHandler(BaseHTTPRequestHandler):
         log_file.writelines(wrtiteData)   
         log_file.flush()
         log_file.close() 
-
+        a = LOGClass()
         global myWin
         myWin.HTTPServerThread.logSignal.emit(wrtiteData)     
         # end = datetime.now()
@@ -150,9 +151,9 @@ class httpHandler(BaseHTTPRequestHandler):
 
         self._set_response()
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
-        print("urlparse: ")
-        o = urlparse(post_data).query
-        print(o)
+        # print("urlparse: ")
+        # o = urlparse(post_data).query
+        # print(o)
         
 def run(self, port = 80):
 
@@ -206,8 +207,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # self.HTTPServerThread.start()         #定时器每一秒执行一次
 
     def show_time(self):
-        self.time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print("time_now:", self.time_now)
+        # self.time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # print("time_now:", self.time_now)
+        pass
 
     # 测试槽
     def testSlot(self, str):
