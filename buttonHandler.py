@@ -15,8 +15,10 @@ class buttonClass(QObject):
     startSignal = pyqtSignal()
     stopSignal = pyqtSignal()
 
-    # 声明写log信号
-    writeLogSignal = pyqtSignal(str)
+    # 声明写log和LCD显示信号
+    writeLogSignal   = pyqtSignal(str)
+    lcdDisplaySignal = pyqtSignal(str)
+
     def __init__(self, myWindow):
         QObject.__init__(self) 
         print("__init__", self)
@@ -40,7 +42,7 @@ class buttonClass(QObject):
         self.stopTimestamp = datetime.now()
         timestamp = self.stopTimestamp - self.startTimestamp
         # print("timestamp: ", timestamp, str(timestamp))
-        self.myWindow.lcdRunningTime.display(str(timestamp)[:-7])
+        self.lcdDisplaySignal.emit(str(timestamp)[:-7])
         pass
 
     def click(self):
@@ -54,7 +56,7 @@ class buttonClass(QObject):
 
             self.Timer1s.start()
             self.startTimestamp = datetime.now()
-            self.myWindow.lcdRunningTime.display("0:00:00")
+            self.lcdDisplaySignal.emit("0:00:00")
 
             # 每次启动时清空log区间
             self.myWindow.logTextBrowser.clear()

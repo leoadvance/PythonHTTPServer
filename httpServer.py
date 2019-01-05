@@ -203,6 +203,7 @@ if __name__ == "__main__":
     myWin.HTTPServerThread.logSignal.connect(myWin.logRecevieSlot)
     myWin.runButton.clicked.connect(buttonHandle.click)
     buttonHandle.writeLogSignal.connect(myWin.logRecevieSlot)
+    buttonHandle.lcdDisplaySignal.connect(myWin.lcdDisplaySlot)
     myWin.show()
     sys.exit(app.exec_())
 

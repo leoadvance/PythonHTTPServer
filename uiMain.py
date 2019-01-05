@@ -21,7 +21,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.lcdRunningTime.setMode(QLCDNumber.Dec)
         self.lcdRunningTime.setSegmentStyle(QLCDNumber.Flat)#Mac系统需要加上，否则下面的color不生效。
         self.lcdRunningTime.setStyleSheet("color: green")
-        self.lcdRunningTime.display("0:00:00")
+        self.lcdDisplaySlot("0:00:00")
 
         # 设置log文本框颜色 最大log行数
         self.logTextBrowser.setStyleSheet("color: rgb(118,214,255)")
@@ -35,6 +35,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     # log接收槽
     def logRecevieSlot(self, str):
-        # print("testSlot: ", str)
         self.logTextBrowser.append(str)
         pass
+
+       # LCD显示槽
+    def lcdDisplaySlot(self, str):
+        self.lcdRunningTime.display(str)
+        pass     
