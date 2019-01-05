@@ -150,7 +150,7 @@ def run(self, port = 80):
 
     server_address = ("", port)
     httpd = HTTPServer(server_address, httpHandler)
-    self.logSignal.emit("testSignal run")
+    # self.logSignal.emit("testSignal run")
     httpd.serve_forever() 
     # app.exec_()
 # 服务器线程
@@ -161,7 +161,7 @@ def threadServer(self):
     hostIP = get_host_ip()
     print("hostIP: " + hostIP + " port: {:d}".format(hostPort))
     print ('Starting http server...')  
-    self.logSignal.emit("testSignal threadServer")
+    # self.logSignal.emit("testSignal threadServer")
 
     # 显示IP和端口号
     # global myWin

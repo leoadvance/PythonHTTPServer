@@ -52,12 +52,16 @@ class buttonClass():
             self.startTimestamp = datetime.now()
             self.myWindow.lcdRunningTime.display("0:00:00")
 
+            # 每次启动时清空log区间
+            self.myWindow.logTextBrowser.clear()
+            self.myWindow.logTextBrowser.append("启动服务器!")
+
             
         else:
             # 清空显示
             self.myWindow.runButton.setText("Start")
             print("关闭服务器!")
-
+            self.myWindow.logTextBrowser.append("关闭服务器!")
             # 关闭定时器
             self.Timer1s.stop()
                
