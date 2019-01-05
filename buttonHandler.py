@@ -11,6 +11,9 @@ DIR_NAME = "./Log"
 
 class buttonClass():
 
+    # 启动和停止信号
+    startSignal = pyqtSignal()
+    stopSignal = pyqtSignal()
     def __init__(self, myWindow):
         print("__init__", self)
         self.myWindow = myWindow
@@ -32,7 +35,7 @@ class buttonClass():
         self.stopTimestamp = datetime.now()
         timestamp = self.stopTimestamp - self.startTimestamp
         # print("timestamp: ", timestamp, str(timestamp))
-        self.myWindow.lcdRunningTime.display(str(timestamp))
+        self.myWindow.lcdRunningTime.display(str(timestamp)[:-7])
         pass
 
     def click(self):
@@ -46,7 +49,7 @@ class buttonClass():
 
             self.Timer1s.start(1000)
             self.startTimestamp = datetime.now()
-            self.myWindow.lcdRunningTime.display("0:00:00.000000")
+            self.myWindow.lcdRunningTime.display("0:00:00")
 
             
         else:

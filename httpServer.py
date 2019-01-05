@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 from ui import *
 from logFile import *
 from buttonHandler import *
+from uiMain import *
 # 允许带执行参数
 import getopt
 import os
@@ -32,7 +33,6 @@ DIR_NAME = "./Log"
 # 参数使用说明
 def usage():
     print("-p   Server Port number Default value is 80")
-
 
 
 # 获取系统参数并解析
@@ -186,45 +186,9 @@ class HTTPServerThread(QThread):
         self.finished_signal.emit('done')
 
 
-class MyWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self):
-        QMainWindow.__init__(self)  # 创建主界面对象
-        Ui_MainWindow.__init__(self)#主界面对象初始化
-        self.setupUi(self)  #配置主界面对象
-        
-        # 1s测试定时器
-        self.testTimer = QTimer() 
-        self.testTimer.timeout.connect(self.show_time)  # 定时超时事件绑定show_time这个函数          
-        self.testTimer.start(1000) 
-
-        # 设定运行时间显示长度和显示模式
-        self.lcdRunningTime.setDigitCount(24)
-        self.lcdRunningTime.setMode(QLCDNumber.Dec)
-        self.lcdRunningTime.setSegmentStyle(QLCDNumber.Flat)#Mac系统需要加上，否则下面的color不生效。
-        self.lcdRunningTime.setStyleSheet("color: green")
-        self.lcdRunningTime.display("0:00:00.000000")
- 
-        
-        # self.HTTPServerThread = HTTPServerThread()
-        # self.HTTPServerThread.
-        # self.HTTPServerThread.start()         #定时器每一秒执行一次
-
-    def show_time(self):
-        # self.time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # print("time_now:", self.time_now)
-        pass
-
-    # 测试槽
-    def testSlot(self, str):
-        # print("testSlot: ", str)
-        pass
 
 if __name__ == "__main__":
-      #创建一个线程ta，执行 threadfun()
-    # tb = threading.Thread(target=threadServer)    #创建一个线程tb，执行threadfun()        #调用start()，运行线程
-    # # 子线程随主线程退出而退出
-    # tb.daemon = True
-    # tb.start()  
+
     app = QApplication(sys.argv)
     global myWin
     myWin = MyWindow()
