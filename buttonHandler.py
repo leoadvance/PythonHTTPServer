@@ -46,7 +46,7 @@ class buttonClass():
 
             self.Timer1s.start(1000)
             self.startTimestamp = datetime.now()
-            
+            self.myWindow.lcdRunningTime.display("0:00:00.000000")
 
             
         else:
@@ -56,5 +56,5 @@ class buttonClass():
 
             # 关闭定时器
             self.Timer1s.stop()
-        self.myWindow.lcdRunningTime.display("0:00:00.000000")       
+               
         pass    
