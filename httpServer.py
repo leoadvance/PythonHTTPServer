@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from ui import *
 from logFile import *
+from buttonHandler import *
 # 允许带执行参数
 import getopt
 import os
@@ -161,9 +162,9 @@ def threadServer(self):
     self.logSignal.emit("testSignal threadServer")
 
     # 显示IP和端口号
-    global myWin
-    myWin.lineEditIP.setText(hostIP)
-    myWin.lineEditPort.setText(str(hostPort))
+    # global myWin
+    # myWin.lineEditIP.setText(hostIP)
+    # myWin.lineEditPort.setText(str(hostPort))
 
     run(self, hostPort)
 
@@ -195,6 +196,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.testTimer = QTimer() 
         self.testTimer.timeout.connect(self.show_time)  # 定时超时事件绑定show_time这个函数          
         self.testTimer.start(1000) 
+
+        # 设定运行时间显示长度和显示模式
+        self.lcdRunningTime.setDigitCount(24)
+        self.lcdRunningTime.setMode(QLCDNumber.Dec)
+        self.lcdRunningTime.setSegmentStyle(QLCDNumber.Flat)#Mac系统需要加上，否则下面的color不生效。
+        self.lcdRunningTime.setStyleSheet("color: green")
+        self.lcdRunningTime.display("0:00:00.000000")
+ 
         
         # self.HTTPServerThread = HTTPServerThread()
         # self.HTTPServerThread.
@@ -207,7 +216,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     # 测试槽
     def testSlot(self, str):
-        print("testSlot: ", str)
+        # print("testSlot: ", str)
+        pass
 
 if __name__ == "__main__":
       #创建一个线程ta，执行 threadfun()
@@ -218,10 +228,11 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     global myWin
     myWin = MyWindow()
-
+    buttonHandle = buttonClass(myWin)
     myWin.HTTPServerThread = HTTPServerThread()
     myWin.HTTPServerThread.logSignal.connect(myWin.testSlot)
     myWin.HTTPServerThread.start()  
+    myWin.runButton.clicked.connect(buttonHandle.click)
     myWin.show()
     sys.exit(app.exec_())
 
