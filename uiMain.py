@@ -23,6 +23,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.lcdRunningTime.setStyleSheet("color: green")
         self.lcdRunningTime.display("0:00:00")
 
+        # 设置log文本框颜色 最大log行数
+        self.logTextBrowser.setStyleSheet("color: rgb(118,214,255)")
+        self.logTextBrowser.document().setMaximumBlockCount(100) 
 
     # log接收槽
     def logRecevieSlot(self, str):
