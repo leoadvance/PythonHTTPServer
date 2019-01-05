@@ -159,6 +159,12 @@ def threadServer(self):
     print("hostIP: " + hostIP + " port: {:d}".format(hostPort))
     print ('Starting http server...')  
     self.logSignal.emit("testSignal threadServer")
+
+    # 显示IP和端口号
+    global myWin
+    myWin.lineEditIP.setText(hostIP)
+    myWin.lineEditPort.setText(str(hostPort))
+
     run(self, hostPort)
 
 
