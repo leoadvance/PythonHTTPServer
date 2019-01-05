@@ -18,6 +18,7 @@ class buttonClass():
         print("__init__", self)
         self.myWindow = myWindow
         self.Timer1s = QTimer() 
+        self.Timer1s.setInterval(1000)
         self.Timer1s.timeout.connect(self.timeout)  # 定时超时事件绑定show_time这个函数          
          
         
@@ -47,7 +48,7 @@ class buttonClass():
             self.myWindow.runButton.setText("Stop")
             print("启动服务器!")
 
-            self.Timer1s.start(1000)
+            self.Timer1s.start()
             self.startTimestamp = datetime.now()
             self.myWindow.lcdRunningTime.display("0:00:00")
 

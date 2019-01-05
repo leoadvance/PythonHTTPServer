@@ -108,7 +108,7 @@ class httpHandler(BaseHTTPRequestHandler):
         # 插入时间数据 年月日 时分秒
         log_date = datetime.now().strftime("%Y/%m/%d")
         log_time = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-        wrtiteData = log_date + "," + log_time + "," + ','.join(listValues[2:]) + "\n"
+        wrtiteData = log_date + "," + log_time + "," + ','.join(listValues[1:]) + "\n"
         # print(wrtiteData)
         # log_file.writelines(wrtiteData)   
         # log_file.flush()
@@ -117,8 +117,10 @@ class httpHandler(BaseHTTPRequestHandler):
 
         self._set_response()
         self.wfile.write("<html><body><h1>HTTP GET Success!</h1></body></html>".encode())
+        
+        # 显示log 并省略最后换行符号
         global myWin
-        myWin.HTTPServerThread.logSignal.emit(wrtiteData)   
+        myWin.HTTPServerThread.logSignal.emit(wrtiteData[:-1])   
         # end = datetime.now()
         # diff = end - start
         # print("写入文件耗时:", diff)
@@ -194,7 +196,7 @@ if __name__ == "__main__":
     myWin = MyWindow()
     buttonHandle = buttonClass(myWin)
     myWin.HTTPServerThread = HTTPServerThread()
-    myWin.HTTPServerThread.logSignal.connect(myWin.testSlot)
+    myWin.HTTPServerThread.logSignal.connect(myWin.logRecevieSlot)
     myWin.HTTPServerThread.start()  
     myWin.runButton.clicked.connect(buttonHandle.click)
     myWin.show()
