@@ -9,12 +9,16 @@ from datetime import datetime
 # log目录名称
 DIR_NAME = "./Log"
 
-class buttonClass():
+class buttonClass(QObject):
 
     # 启动和停止信号
     startSignal = pyqtSignal()
     stopSignal = pyqtSignal()
+
+    # 声明写log信号
+    writeLogSignal = pyqtSignal(str)
     def __init__(self, myWindow):
+        QObject.__init__(self) 
         print("__init__", self)
         self.myWindow = myWindow
         self.Timer1s = QTimer() 
@@ -54,14 +58,14 @@ class buttonClass():
 
             # 每次启动时清空log区间
             self.myWindow.logTextBrowser.clear()
-            self.myWindow.logTextBrowser.append("启动服务器!")
+            self.writeLogSignal.emit("启动服务器!")
 
             
         else:
             # 清空显示
             self.myWindow.runButton.setText("Start")
             print("关闭服务器!")
-            self.myWindow.logTextBrowser.append("关闭服务器!")
+            self.writeLogSignal.emit("关闭服务器!")
             # 关闭定时器
             self.Timer1s.stop()
                

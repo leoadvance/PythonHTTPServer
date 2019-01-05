@@ -196,9 +196,13 @@ if __name__ == "__main__":
     myWin = MyWindow()
     buttonHandle = buttonClass(myWin)
     myWin.HTTPServerThread = HTTPServerThread()
-    myWin.HTTPServerThread.logSignal.connect(myWin.logRecevieSlot)
+    
     myWin.HTTPServerThread.start()  
+    
+    # 绑定信号和槽
+    myWin.HTTPServerThread.logSignal.connect(myWin.logRecevieSlot)
     myWin.runButton.clicked.connect(buttonHandle.click)
+    buttonHandle.writeLogSignal.connect(myWin.logRecevieSlot)
     myWin.show()
     sys.exit(app.exec_())
 

@@ -26,7 +26,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # 设置log文本框颜色 最大log行数
         self.logTextBrowser.setStyleSheet("color: rgb(118,214,255)")
         self.logTextBrowser.document().setMaximumBlockCount(100) 
-        self.logTextBrowser.append(
+        self.logRecevieSlot(
         '''
 默认log以csv格式记录下在./log文件夹下，删除对应log文件后会自动重建。
 点击"Start"后服务器正式启动。启停服务器不会删除之前保存的log。
