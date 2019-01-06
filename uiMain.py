@@ -41,4 +41,5 @@ class MyWindow(QMainWindow, Ui_MainWindow):
        # LCD显示槽
     def lcdDisplaySlot(self, str):
         self.lcdRunningTime.display(str)
-        pass     
+        pass 
+           

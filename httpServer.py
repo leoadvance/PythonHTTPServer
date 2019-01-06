@@ -17,6 +17,7 @@ import urllib
 import sys 
 import socket
 import numpy as np
+import time
 # 时间
 from datetime import datetime
 
@@ -119,8 +120,8 @@ class httpHandler(BaseHTTPRequestHandler):
         self.wfile.write("<html><body><h1>HTTP GET Success!</h1></body></html>".encode())
         
         # 显示log 并省略最后换行符号
-        global myWin
-        myWin.HTTPServerThread.logSignal.emit(wrtiteData[:-1])   
+        global httpServer
+        httpServer.logSignal.emit(wrtiteData[:-1])   
         # end = datetime.now()
         # diff = end - start
         # print("写入文件耗时:", diff)
@@ -145,65 +146,82 @@ class httpHandler(BaseHTTPRequestHandler):
         # print("urlparse: ")
         # o = urlparse(post_data).query
         # print(o)
-        
-def run(self, port = 80):
 
-    server_address = ("", port)
-    httpd = HTTPServer(server_address, httpHandler)
-    # self.logSignal.emit("testSignal run")
-    httpd.serve_forever() 
-    # app.exec_()
-# 服务器线程
-def threadServer(self):
-    # 获取系统参数
-    getSysPara()
-    # 获取本机IP
-    hostIP = get_host_ip()
-    print("hostIP: " + hostIP + " port: {:d}".format(hostPort))
-    print ('Starting http server...')  
-    # self.logSignal.emit("testSignal threadServer")
+class HTTPServerClass(QThread):
 
-    # 显示IP和端口号
-    # global myWin
-    # myWin.lineEditIP.setText(hostIP)
-    # myWin.lineEditPort.setText(str(hostPort))
-
-    run(self, hostPort)
-
-
-class HTTPServerThread(QThread):
-
-    # 创建finish信号量 参数字符串
-    finished_signal = pyqtSignal(str)
 
     # log信号
     logSignal = pyqtSignal(str)
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.threadServer()
+        self.timerOnce = QTimer()
+        self.timerOnce.setInterval(10)
+        self.timerOnce.setSingleShot(True)
+        self.timerOnce.timeout.connect(self.realStartServer)
         # self._rest = rest
+    def __del__(self):
+        print("__del__", self)
 
     def run(self):
         print('Qt HTTP server Thread Start')
-        threadServer(self)
-        self.finished_signal.emit('done')
+        while True:
+            time.sleep(1)
 
 
+    # 服务器线程
+    def threadServer(self):
+        # 获取系统参数
+        getSysPara()
+        # 获取本机IP
+        hostIP = get_host_ip()
+        print("hostIP: " + hostIP + " port: {:d}".format(hostPort))
+        print ('Starting http server...')  
+        # self.startServer(hostPort)
+
+        # self.logSignal.emit("testSignal threadServer")
+
+        # 显示IP和端口号
+        # global myWin
+        # myWin.lineEditIP.setText(hostIP)
+        # myWin.lineEditPort.setText(str(hostPort))
+    def startServer(self):
+        print("startServer!")
+        self.timerOnce.start()
+ 
+
+    def realStartServer(self):
+        print("realStartServer!")
+        server_address = ("", hostPort)
+        self.httpd = HTTPServer(server_address, httpHandler)
+        # self.logSignal.emit("testSignal run")
+        self.httpd.serve_forever() 
+        pass
+
+    # 停止服务器    
+    def stopServer(self):
+        # self.logSignal.emit("testSignal run")
+        print("stopServer!")
+        self.httpd.serve_close() 
 
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)
-    global myWin
     myWin = MyWindow()
     buttonHandle = buttonClass(myWin)
-    myWin.HTTPServerThread = HTTPServerThread()
+    buttonHandle.start()
+    global httpServer
+    httpServer = HTTPServerClass()
     
-    myWin.HTTPServerThread.start()  
+    httpServer.start()  
     
     # 绑定信号和槽
-    myWin.HTTPServerThread.logSignal.connect(myWin.logRecevieSlot)
+    httpServer.logSignal.connect(myWin.logRecevieSlot)
     myWin.runButton.clicked.connect(buttonHandle.click)
     buttonHandle.writeLogSignal.connect(myWin.logRecevieSlot)
     buttonHandle.lcdDisplaySignal.connect(myWin.lcdDisplaySlot)
+    buttonHandle.startSignal.connect(httpServer.startServer)
+    buttonHandle.stopSignal.connect(httpServer.stopServer)
     myWin.show()
     sys.exit(app.exec_())
 

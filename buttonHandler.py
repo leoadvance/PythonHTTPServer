@@ -2,14 +2,14 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import os
-
+import time
 # 时间
 from datetime import datetime
 
 # log目录名称
 DIR_NAME = "./Log"
 
-class buttonClass(QObject):
+class buttonClass(QThread):
 
     # 启动和停止信号
     startSignal = pyqtSignal()
@@ -19,8 +19,9 @@ class buttonClass(QObject):
     writeLogSignal   = pyqtSignal(str)
     lcdDisplaySignal = pyqtSignal(str)
 
+
     def __init__(self, myWindow):
-        QObject.__init__(self) 
+        QThread.__init__(self) 
         print("__init__", self)
         self.myWindow = myWindow
         self.Timer1s = QTimer() 
@@ -31,6 +32,10 @@ class buttonClass(QObject):
     def __del__(self):
         print("__del__", self)
 
+    def run(self):
+        print('button Thread Start')
+        while True:
+            time.sleep(1)
 
         # self.HTTPServerThread = HTTPServerThread()
         # self.HTTPServerThread.
@@ -61,6 +66,7 @@ class buttonClass(QObject):
             # 每次启动时清空log区间
             self.myWindow.logTextBrowser.clear()
             self.writeLogSignal.emit("启动服务器!")
+            # self.startSignal.emit()
 
             
         else:
@@ -68,6 +74,7 @@ class buttonClass(QObject):
             self.myWindow.runButton.setText("Start")
             print("关闭服务器!")
             self.writeLogSignal.emit("关闭服务器!")
+            # self.stopSignal.emit()
             # 关闭定时器
             self.Timer1s.stop()
                
