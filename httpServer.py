@@ -33,7 +33,11 @@ class httpHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         # print("do_GET: ",self.path)
-        
+
+        # 过滤数据，必须以/?起始
+        strPATH = str(self.path)
+        if (strPATH[1] != "?"):
+            return
         # print("Path: : " + str(self.path))
         # print("Headers: " + str(self.headers))
 
