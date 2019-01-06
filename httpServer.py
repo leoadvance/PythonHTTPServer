@@ -149,24 +149,22 @@ class httpHandler(BaseHTTPRequestHandler):
 
 class HTTPServerClass(QThread):
 
-
     # log信号
     logSignal = pyqtSignal(str)
     def __init__(self, parent=None):
         super().__init__(parent)
         self.threadServer()
-        self.timerOnce = QTimer()
-        self.timerOnce.setInterval(10)
-        self.timerOnce.setSingleShot(True)
-        self.timerOnce.timeout.connect(self.realStartServer)
+
         # self._rest = rest
     def __del__(self):
         print("__del__", self)
 
     def run(self):
         print('Qt HTTP server Thread Start')
-        while True:
-            time.sleep(1)
+        server_address = ("", hostPort)
+        self.httpd = HTTPServer(server_address, httpHandler)
+        # self.logSignal.emit("testSignal run")
+        self.httpd.serve_forever() 
 
 
     # 服务器线程
@@ -187,22 +185,15 @@ class HTTPServerClass(QThread):
         # myWin.lineEditPort.setText(str(hostPort))
     def startServer(self):
         print("startServer!")
-        self.timerOnce.start()
+        self.start()  
  
-
-    def realStartServer(self):
-        print("realStartServer!")
-        server_address = ("", hostPort)
-        self.httpd = HTTPServer(server_address, httpHandler)
-        # self.logSignal.emit("testSignal run")
-        self.httpd.serve_forever() 
-        pass
 
     # 停止服务器    
     def stopServer(self):
         # self.logSignal.emit("testSignal run")
         print("stopServer!")
-        self.httpd.serve_close() 
+        self.httpd.server_close()
+        self.terminate() 
 
 if __name__ == "__main__":
 
@@ -213,7 +204,7 @@ if __name__ == "__main__":
     global httpServer
     httpServer = HTTPServerClass()
     
-    httpServer.start()  
+    
     
     # 绑定信号和槽
     httpServer.logSignal.connect(myWin.logRecevieSlot)

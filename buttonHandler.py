@@ -66,7 +66,7 @@ class buttonClass(QThread):
             # 每次启动时清空log区间
             self.myWindow.logTextBrowser.clear()
             self.writeLogSignal.emit("启动服务器!")
-            # self.startSignal.emit()
+            self.startSignal.emit()
 
             
         else:
@@ -74,7 +74,7 @@ class buttonClass(QThread):
             self.myWindow.runButton.setText("Start")
             print("关闭服务器!")
             self.writeLogSignal.emit("关闭服务器!")
-            # self.stopSignal.emit()
+            self.stopSignal.emit()
             # 关闭定时器
             self.Timer1s.stop()
                
