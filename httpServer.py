@@ -21,58 +21,8 @@ import time
 # 时间
 from datetime import datetime
 
-import threading
-
 # 默认端口号
 hostPort = 80
-
-DIR_NAME = "./Log"
-
-
-
-# 参数使用说明
-def usage():
-    print("-p   Server Port number Default value is 80")
-
-
-# 获取系统参数并解析
-def getSysPara():
-    argv = sys.argv[1:]
-    # print("argv:", argv)
-    try:
-        # 获取参数 带:表明必须带参数 如p: -p xx
-        Para, args = getopt.getopt(argv, "hp:", ["help"])
-        # print('Para   :', Para)
-        for o, arg in Para:
-            if o in ("-h", "--help"):
-                # 打印使用说明
-                usage()
-                sys.exit(0)
-            # 提取端口号
-            if o in ("-p"):
-                
-                # 声明host是全局变量
-                global hostPort 
-                hostPort = int(arg)
-                # 防止越界
-                if hostPort < 0 or hostPort > 65536:
-                    print(" ERROR ! The port number must be between 0 and 65535!")
-                    sys.exit(1)
-                # else: 
-                    # print("arg:", hostPort)
-
-    except getopt.GetoptError as err:
-        print('ERROR:', err)
-        sys.exit(1)
-
-def get_host_ip():
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-    finally:
-        s.close()
-    return ip
 
 class httpHandler(BaseHTTPRequestHandler):
     def _set_response(self):
@@ -110,9 +60,7 @@ class httpHandler(BaseHTTPRequestHandler):
         log_time = datetime.now().strftime("%H:%M:%S.%f")[:-3]
         wrtiteData = log_date + "," + log_time + "," + ','.join(listValues[1:]) + "\n"
         # print(wrtiteData)
-        # log_file.writelines(wrtiteData)   
-        # log_file.flush()
-        # log_file.close() 
+
         logClass.log_file_write(wrtiteData)
 
         self._set_response()
@@ -155,7 +103,7 @@ class HTTPServerClass(QThread):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.threadServer()
+        self.getSysPara()
         self.Port = hostPort
 
         # self._rest = rest
@@ -163,7 +111,7 @@ class HTTPServerClass(QThread):
         print("__del__", self)
 
     def run(self):
-        self.hostIP = get_host_ip()
+        self.hostIP = self.get_host_ip()
         print("hostIP: " + self.hostIP + " port: {:d}".format(self.Port))
         print ('Starting http server...') 
 
@@ -174,22 +122,8 @@ class HTTPServerClass(QThread):
         self.httpd = HTTPServer(server_address, httpHandler)
         # self.logSignal.emit("testSignal run")
         self.httpd.serve_forever() 
+    
 
-
-    # 服务器线程
-    def threadServer(self):
-        # 获取系统参数
-        getSysPara()
-        # 获取本机IP
-   
-        # self.startServer(hostPort)
-
-        # self.logSignal.emit("testSignal threadServer")
-
-        # 显示IP和端口号
-        # global myWin
-        # myWin.lineEditIP.setText(hostIP)
-        # myWin.lineEditPort.setText(str(hostPort))
     def startServer(self):
         print("startServer!")
         self.start()  
@@ -203,6 +137,50 @@ class HTTPServerClass(QThread):
         self.terminate() 
         self.hostIPSignal.emit("")
         self.hostPortSignal.emit("")
+
+    def get_host_ip(self):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(('8.8.8.8', 80))
+            ip = s.getsockname()[0]
+        finally:
+            s.close()
+        return ip
+
+
+    # 参数使用说明
+    def usage(self):
+        print("-p   Server Port number Default value is 80")
+
+    # 获取系统参数并解析
+    def getSysPara(self):
+        argv = sys.argv[1:]
+        # print("argv:", argv)
+        try:
+            # 获取参数 带:表明必须带参数 如p: -p xx
+            Para, args = getopt.getopt(argv, "hp:", ["help"])
+            # print('Para   :', Para)
+            for o, arg in Para:
+                if o in ("-h", "--help"):
+                    # 打印使用说明
+                    self.usage()
+                    sys.exit(0)
+                # 提取端口号
+                if o in ("-p"):
+                    
+                    # 声明host是全局变量
+                    global hostPort 
+                    hostPort = int(arg)
+                    # 防止越界
+                    if hostPort < 0 or hostPort > 65536:
+                        print(" ERROR ! The port number must be between 0 and 65535!")
+                        sys.exit(1)
+                    # else: 
+                        # print("arg:", hostPort)
+
+        except getopt.GetoptError as err:
+            print('ERROR:', err)
+            sys.exit(1)    
 
 if __name__ == "__main__":
 
