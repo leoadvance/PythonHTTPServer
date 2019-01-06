@@ -1,6 +1,7 @@
 # coding=utf-8
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 import os
 from ui import *
 
@@ -35,7 +36,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     # log接收槽
     def logRecevieSlot(self, str):
-        self.logTextBrowser.append(str)
+        # self.logTextBrowser.append(str)
+
+        self.logTextBrowser.insertPlainText(str+'\n')
+        self.logTextBrowser.moveCursor(QTextCursor.Start)
+
         pass
 
        # LCD显示槽
