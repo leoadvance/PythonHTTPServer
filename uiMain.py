@@ -42,4 +42,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def lcdDisplaySlot(self, str):
         self.lcdRunningTime.display(str)
         pass 
-           
+    # IP显示
+    def lineEditIPSlot(self, IP:str):
+        self.lineEditIP.setText(IP)
+        pass      
+    # port显示
+    def lineEditPortSlot(self, Port:str):
+        self.lineEditPort.setText(Port)
+        pass         

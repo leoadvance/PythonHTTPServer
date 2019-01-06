@@ -23,8 +23,7 @@ from datetime import datetime
 
 import threading
 
-# 默认IP和端口号
-hostIP = "192.168.1.1"
+# 默认端口号
 hostPort = 80
 
 DIR_NAME = "./Log"
@@ -77,7 +76,7 @@ def get_host_ip():
 
 class httpHandler(BaseHTTPRequestHandler):
     def _set_response(self):
-        print("_set_response: ")
+        # print("_set_response: ")
         self.send_response(200)
         self.send_header('Content-type'.encode(), 'text/html'.encode())
         self.end_headers()
@@ -150,18 +149,28 @@ class httpHandler(BaseHTTPRequestHandler):
 class HTTPServerClass(QThread):
 
     # log信号
-    logSignal = pyqtSignal(str)
+    logSignal      = pyqtSignal(str)
+    hostIPSignal   = pyqtSignal(str)
+    hostPortSignal = pyqtSignal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.threadServer()
+        self.Port = hostPort
 
         # self._rest = rest
     def __del__(self):
         print("__del__", self)
 
     def run(self):
-        print('Qt HTTP server Thread Start')
-        server_address = ("", hostPort)
+        self.hostIP = get_host_ip()
+        print("hostIP: " + self.hostIP + " port: {:d}".format(self.Port))
+        print ('Starting http server...') 
+
+        self.hostIPSignal.emit(self.hostIP)
+        self.hostPortSignal.emit(str(self.Port))
+
+        server_address = ("", self.Port)
         self.httpd = HTTPServer(server_address, httpHandler)
         # self.logSignal.emit("testSignal run")
         self.httpd.serve_forever() 
@@ -172,9 +181,7 @@ class HTTPServerClass(QThread):
         # 获取系统参数
         getSysPara()
         # 获取本机IP
-        hostIP = get_host_ip()
-        print("hostIP: " + hostIP + " port: {:d}".format(hostPort))
-        print ('Starting http server...')  
+   
         # self.startServer(hostPort)
 
         # self.logSignal.emit("testSignal threadServer")
@@ -194,6 +201,8 @@ class HTTPServerClass(QThread):
         print("stopServer!")
         self.httpd.server_close()
         self.terminate() 
+        self.hostIPSignal.emit("")
+        self.hostPortSignal.emit("")
 
 if __name__ == "__main__":
 
@@ -208,6 +217,8 @@ if __name__ == "__main__":
     
     # 绑定信号和槽
     httpServer.logSignal.connect(myWin.logRecevieSlot)
+    httpServer.hostIPSignal.connect(myWin.lineEditIPSlot)
+    httpServer.hostPortSignal.connect(myWin.lineEditPortSlot)
     myWin.runButton.clicked.connect(buttonHandle.click)
     buttonHandle.writeLogSignal.connect(myWin.logRecevieSlot)
     buttonHandle.lcdDisplaySignal.connect(myWin.lcdDisplaySlot)
