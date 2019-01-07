@@ -36,10 +36,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     # log接收槽
     def logRecevieSlot(self, str):
-        # self.logTextBrowser.append(str)
+        self.logTextBrowser.append(str)
 
-        self.logTextBrowser.insertPlainText(str+'\n')
-        self.logTextBrowser.moveCursor(QTextCursor.Start)
+        # self.logTextBrowser.insertPlainText(str+'\n')
+        # self.logTextBrowser.moveCursor(QTextCursor.Start)
 
         pass
 
