@@ -2,10 +2,6 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "/Users/LEO/Documents/PlatformIO/Projects/ESP32Client",
-			"name": "ESP32Client"
 		}
 	],
 	"settings": {
