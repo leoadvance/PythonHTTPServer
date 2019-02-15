@@ -119,11 +119,14 @@ class HTTPServerClass(QThread):
         print("hostIP: " + self.hostIP + " port: {:d}".format(self.Port))
         print ('Starting http server...') 
 
-        self.hostIPSignal.emit(self.hostIP)
-        self.hostPortSignal.emit(str(self.Port))
+
 
         server_address = ("", self.Port)
         self.httpd = HTTPServer(server_address, httpHandler)
+
+        self.hostIPSignal.emit(self.hostIP)
+        self.hostPortSignal.emit(str(self.Port))
+        
         # self.logSignal.emit("testSignal run")
         self.httpd.serve_forever() 
     
