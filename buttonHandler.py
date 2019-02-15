@@ -8,6 +8,7 @@ from datetime import datetime
 
 # log目录名称
 DIR_NAME = "./Log"
+CODER_VERDSION = "0.0.2"
 
 class buttonClass(QThread):
 
@@ -65,7 +66,7 @@ class buttonClass(QThread):
 
             # 每次启动时清空log区间
             self.myWindow.logTextBrowser.clear()
-            self.writeLogSignal.emit("启动服务器!")
+            self.writeLogSignal.emit("启动服务器! 系统版本: " + CODER_VERDSION)
             self.startSignal.emit()
 
             
