@@ -20,9 +20,13 @@ import numpy as np
 import time
 # 时间
 from datetime import datetime
+from socketserver import ThreadingMixIn
 
 # 默认端口号
 hostPort = 80
+
+class ThreadingHttpServer(ThreadingMixIn, HTTPServer):
+    pass
 
 class httpHandler(BaseHTTPRequestHandler):
     def _set_response(self):
@@ -33,7 +37,7 @@ class httpHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         # print("do_GET: ",self.path)
-
+        # print ("self:" ,self)
         # 过滤数据，必须以/?起始
         strPATH = str(self.path)
         if (strPATH[1] != "?"):
@@ -73,6 +77,8 @@ class httpHandler(BaseHTTPRequestHandler):
         # 显示log 并省略最后换行符号
         global httpServer
         httpServer.logSignal.emit(wrtiteData[:-1])   
+        # time.sleep(10)
+        # print("do_GET: end")
         # end = datetime.now()
         # diff = end - start
         # print("写入文件耗时:", diff)
@@ -122,7 +128,8 @@ class HTTPServerClass(QThread):
 
 
         server_address = ("", self.Port)
-        self.httpd = HTTPServer(server_address, httpHandler)
+        #self.httpd = HTTPServer(server_address, httpHandler)
+        self.httpd = ThreadingHttpServer(server_address, httpHandler)
 
         self.hostIPSignal.emit(self.hostIP)
         self.hostPortSignal.emit(str(self.Port))
